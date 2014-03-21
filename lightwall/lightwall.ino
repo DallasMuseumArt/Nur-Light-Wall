@@ -8,27 +8,25 @@ int lastSensorReadings[5] = { 0, 0, 0, 0, 0 };
  * installed in the exhibition
  *
  * Arduino #1
- *
- * int threshold[5] = { 430, 370, 370, 370, 410 };
- *
- * Arduino #2
- *
- * int threshold[5] = { 410, 520, 450, 340, 410 };
- *
- * Arduino #3
- *
- * int threshold[5] = { 410, 400, 450, 410, 410 };
- *
- * Arduino #4
- *
- * int threshold[5] = { 560, 410, 400, 410, 10000 };
- *
- * Arduino #5
- *
- * int threshold[5] = { 410, 520, 400, 400, 400 };
- *
  */
-int threshold[5] = { 410, 520, 500, 340, 470 };
+//int threshold[5] = { 430, 370, 370, 370, 410 };
+ /*
+ * Arduino #2
+ */
+//int threshold[5] = { 410, 520, 450, 340, 410 };
+ /*
+ * Arduino #3
+ */
+//int threshold[5] = { 410, 400, 450, 410, 410 };
+ /*
+ * Arduino #4
+ */
+//int threshold[5] = { 560, 410, 400, 410, 10000 };
+ /*
+ * Arduino #5
+ */
+//int threshold[5] = { 410, 520, 400, 400, 400 };
+
 
 boolean isFirst = true;
 
@@ -84,15 +82,20 @@ void loop() {
       Serial.println(sensorReading);
       
       // Turn on the light
-      analogWrite(lights[i], LIGHT);
+      for (int a = 0; a < 20; a++) {
+        analogWrite(lights[i], LIGHT);        
+        delay(FADESPEED);
+      }
+      //analogWrite(lights[i], LIGHT);
     } else if (lastSensorReadings[i] > threshold[i]) {
+      
+      delay(250);
+      
       /*
        * When the previous reading has dropped below the threshold
        * and the current reading is below the threshold fade the
        * light out to 0
        */
-      Serial.print("last reading: ");
-      Serial.println(lastSensorReadings[i]);
       for (int a = 10; a > -1; a--) {
         int r = map(a, 0, 10, 0, sensorReading);
         analogWrite(lights[i], r);
