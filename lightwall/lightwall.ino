@@ -1,5 +1,6 @@
 int sensors[5] = { A0, A1, A2, A3, A4 };
 int lights[5] = { 2, 3, 4, 5, 6 };
+int lightsActive[5] = { false, false, false, false, false };
 int lastSensorReadings[5] = { 0, 0, 0, 0, 0 };
 
 /**
@@ -9,18 +10,17 @@ int lastSensorReadings[5] = { 0, 0, 0, 0, 0 };
  *
  * Arduino #1
  */
-//int threshold[5] = { 430, 370, 370, 370, 410 };
+//int threshold[5] = { 460, 370, 370, 400, 410 };
  /*
  * Arduino #2
  */
-//int threshold[5] = { 410, 520, 450, 340, 410 };
+//int threshold[5] = { 410, 520, 5000, 340, 500 };
  /*
  * Arduino #3
  */
 //int threshold[5] = { 410, 400, 450, 410, 410 };
  /*
  * Arduino #4
- */
 //int threshold[5] = { 560, 410, 400, 410, 10000 };
  /*
  * Arduino #5
@@ -30,7 +30,7 @@ int lastSensorReadings[5] = { 0, 0, 0, 0, 0 };
 
 boolean isFirst = true;
 
-#define FADESPEED 40
+#define FADESPEED 30
 /**
  * Arduino #1 410
  */
@@ -81,12 +81,17 @@ void loop() {
       Serial.print(" VALUE ");
       Serial.println(sensorReading);
       
-      // Turn on the light
-      for (int a = 0; a < 20; a++) {
-        analogWrite(lights[i], LIGHT);        
-        delay(FADESPEED);
+      if (!lightsActive[i]) {
+        // Turn on the light
+        for (int a = 0; a < 20; a++) {
+          //analogWrite(lights[i], LIGHT);
+          int r = map(a, 0, 20, 0, LIGHT);
+          analogWrite(lights[i], r);     
+          delay(FADESPEED);
+        }
+        //analogWrite(lights[i], LIGHT);
+        lightsActive[i] = true;
       }
-      //analogWrite(lights[i], LIGHT);
     } else if (lastSensorReadings[i] > threshold[i]) {
       
       delay(250);
@@ -96,12 +101,14 @@ void loop() {
        * and the current reading is below the threshold fade the
        * light out to 0
        */
-      for (int a = 10; a > -1; a--) {
-        int r = map(a, 0, 10, 0, sensorReading);
+      for (int a = 20; a > -1; a--) {
+        int r = map(a, 0, 20, 0, LIGHT);
         analogWrite(lights[i], r);
         
         delay(FADESPEED);
       }
+      
+      lightsActive[i] = false;
     }
     
     lastSensorReadings[i] = sensorReading;
